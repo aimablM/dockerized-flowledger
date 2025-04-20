@@ -1,0 +1,23 @@
+# 1. Use the right Node.js version
+FROM node:20.9.0
+
+# 2. Create a folder inside the container to hold the app
+WORKDIR /backend
+
+# 3. Copy only package.json first (for layer caching)
+COPY package*.json ./
+
+# 4. Install prod dependencies only
+RUN npm install --omit=dev
+
+# 5. Copy the rest of the source code
+COPY . .
+
+# 6. Set environment variable (optional here)
+ENV NODE_ENV=production
+
+# 7. Expose the port your backend uses
+EXPOSE 8888
+
+# 8. Start the app
+CMD ["npm", "start"]

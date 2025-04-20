@@ -1,0 +1,30 @@
+# Stage 1: Build the React app using Vite
+FROM node:20.9.0 AS builder
+
+WORKDIR /frontend
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+ENV VITE_API_URL=http://backend:8888/api
+RUN npm run build
+
+# Stage 2: Serve with a tiny Node-based static server
+FROM node:20.9.0
+
+WORKDIR /frontend
+
+# Install 'serve' to host static files
+RUN npm install -g serve
+
+# Copy built files from previous stage
+COPY --from=builder /frontend/dist ./dist
+
+# Expose the frontend port
+EXPOSE 3000
+
+# Start the app
+CMD ["serve", "-s", "dist", "-l", "3000"]
+
+# Note: The frontend will be served on port 3000
